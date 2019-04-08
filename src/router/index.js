@@ -174,12 +174,12 @@ export const constantRouterMap = [
         component: () => import('@/views/course/index'),
         meta: { title: '课程列表', icon: 'table' }
       },
-    //   {
-    //     path: 'courseDetail/:id',
-    //     name: '课程详情',
-    //     component: () => import('@/views/course/courseDetail'),
-    //     meta: { title: '课程详情', icon: 'table' }
-    //   }
+      {
+        path: 'courseDetail/:id',
+        name: '课程详情',
+        component: () => import('@/views/course/courseDetail'),
+        meta: { title: '课程详情', icon: 'table' }
+      }
     ]
   },
 //   {

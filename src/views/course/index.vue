@@ -90,14 +90,14 @@
         </el-select>
         </el-form-item>
          <el-form-item label="章节目录:">
-          <el-upload action="http://localhost:3000/api/base/upload" :on-success="handleAvatarSuccess">
+          <el-upload action="http://localhost:3000/api/base/upload" accept=".mp4,.avi" :on-success="handleAvatarSuccess">
           <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
           
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button type="primary" @click="courseAddClass">保 存</el-button>
+        <el-button type="primary" @click="courseAddClass()">保 存</el-button>
       </div>
     </el-dialog>
   </div>
@@ -133,7 +133,8 @@ export default {
         course: "",
         teacher: "",
         resource: ""
-      }
+      },
+      row:{}
     };
   },
 
@@ -161,6 +162,7 @@ export default {
     addClass(row) {
       this.ClassAdd.course = row.name;
       this.dialogCalssAdd = true;
+      this.row=row
     },
     courseAddClass() {
       if (this.resource) {
@@ -169,7 +171,13 @@ export default {
       var param = { table: "classes", data: this.ClassAdd };
       this.$http.post("/api/base/insert", param).then(res => {
         var data = res.data;
+
         this.dialogCalssAdd = false;
+        var sql=sqlMap.courses.autoClassQTY.replace('?',this.row.id)
+        this.$http.post("/api/base/action", { sql: sql }).then(res => {
+         this.request()
+        });
+       
       });
     },
     request() {
