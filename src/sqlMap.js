@@ -33,6 +33,22 @@ var sqlMap = {
     },
     classes: {
         getCourseClass: 'select * from classes where course ="?"',
+        delClass: 'delete  from classes where id ="?"',
+        getResource: function (params) {
+            var sql = 'select * from resource where id in ('
+            //不可为空
+            for (let index = 0; index < params.length; index++) {
+                const element = params[index];
+                sql += element + ","
+                
+            }
+            // for (const id of params) {
+            //     sql += id + ","
+            // }
+            sql = sql.substring(0, sql.lastIndexOf(','))
+            sql += ')'
+            return sql;
+        },
     },
     customers: {
         page: function (listQuery) {

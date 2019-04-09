@@ -154,12 +154,12 @@ export const constantRouterMap = [
         component: () => import('@/views/customers/index'),
         meta: { title: '客户列表', icon: 'table' }
       },
-    //   {
-    //     path: 'customersDetail',
-    //     name: '客户详情',
-    //     component: () => import('@/views/customers/customersDetail'),
-    //     meta: { title: '客户详情', icon: 'table' }
-    //   }
+      {
+        path: 'customersDetail',
+        name: '客户详情',
+        component: () => import('@/views/customers/customersDetail'),
+        meta: { title: '客户详情', icon: 'table' }
+      }
     ]
   },
   {
