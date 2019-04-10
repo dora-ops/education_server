@@ -132,7 +132,8 @@ export default {
         name: "",
         course: "",
         teacher: "",
-        resource: ""
+        resource: "",
+        progress:30
       },
       row:{}
     };

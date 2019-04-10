@@ -49,6 +49,7 @@ var sqlMap = {
             sql += ')'
             return sql;
         },
+        updateResource: 'UPDATE `classes` SET resource = "?"  WHERE (`id` = "?")'
     },
     customers: {
         page: function (listQuery) {

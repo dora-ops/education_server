@@ -98,7 +98,9 @@ export default {
       classList: [],
       dialogAdd: false,
       dialogCalssAdd: false,
-      fileList: []
+      fileList: [],
+      resource: [],
+      claId: ""
     };
   },
 
@@ -117,12 +119,17 @@ export default {
       loading.close();
     },
     updateifSale(row) {
+      this.claId = row.id;
       if (row.resource) {
-        var sql = classes.getResource(JSON.parse(row.resource) );
+        var sql = classes.getResource(JSON.parse(row.resource));
         this.$http.post("/api/base/action", { sql: sql }).then(res => {
-          this.fileList= res.data.map(item=>{
-              return {name:item.originalname,url:'http://localhost:3000/'+item.fileName}
-          })
+          this.fileList = res.data.map(item => {
+            this.resource.push(item.id);
+            return {
+              name: item.originalname,
+              url: "http://localhost:3000/" + item.fileName
+            };
+          });
         });
       }
 
@@ -138,6 +145,15 @@ export default {
       // this.imageUrl = URL.createObjectURL(file.raw);
       console.log(res);
       this.resource = this.resource.concat(res);
+    },
+    courseAddClass() {
+      var sql = classes.updateResource
+        .replace("?", JSON.stringify(this.resource))
+        .replace("?", this.claId);
+      this.$http.post("/api/base/action", { sql: sql }).then(res => {
+        this.dialogCalssAdd = false;
+        this.request();
+      });
     },
     request() {
       var id = this.$route.params.id;
