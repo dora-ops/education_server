@@ -36,7 +36,7 @@
       <el-table-column align="center" label="操作" width="330">
         <template slot-scope="scope">
           <!-- <el-button class="filter-item" type="primary" v-waves icon="search" @click="addClass(scope.row)">购课</el-button> -->
-          <el-button v-if='scope.row.ifBuy == 1' class="filter-item" type="primary" v-waves icon="search" @click="cancelBuy(scope.row)">退课</el-button>
+          <el-button v-if='scope.row.ifBuy == 1' class="filter-item" type="primary" v-waves icon="search" @click="openCancel(scope.row)">退课</el-button>
           <el-button v-else disabled class="filter-item" type="primary" v-waves icon="search" >退课</el-button>
         </template>
       </el-table-column>
@@ -62,21 +62,21 @@
     </el-dialog> -->
     <el-dialog id="Cancel" title="退课" :visible.sync="dialogCancel" width="400px" center >
       <el-form :model="buyCourse" size="mini" label-width="75px">
-        <el-form-item label="客户名称:">11111111</el-form-item>
-        <el-table :data="courseCancel">
+        <el-form-item label="客户名称:">{{this.row.name}}</el-form-item>
+        <el-table :data="cancelList">
           <el-table-column label="课程名">
             <template slot-scope="scope">
-              <span>{{scope.row.courseName}}</span>
+              <span>{{scope.row.name}}</span>
             </template>
           </el-table-column>
           <el-table-column label="班级">
             <template slot-scope="scope">
-              <span>{{scope.row.className}}</span>
+              <span>{{scope.row.course}}</span>
             </template>
           </el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button>退课</el-button>
+              <el-button type="primary" @click="cancelBuy(scope.row)">退课</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -116,7 +116,9 @@ export default {
           courseName: "课程名",
           className: "班级"
         }
-      ]
+      ],
+      cancelList:[],
+      row:{}
     };
   },
 
@@ -139,18 +141,26 @@ export default {
       this.$router.push("customersDetail");
       loading.close();
     },
-    cancelBuy(row) {
+    openCancel(row) {
+      this.row=row
+      this.cancelList=[]
       this.getClass(row.id)
-      // this.dialogCancel = true
+      this.dialogCancel = true
       // this.buyCourse.courses=[]
       // row.ifBuy='0'
-      // this.updateCustomer(row)
     },
     getClass(id){
-      sql = sqlMap.customers.getClass.replace('?',id);
-      this.$http.post("/api/base/getBuyClass", { sql: sql }).then(res => {
-        var classId = res.data;
+      
+      var sql = sqlMap.customers.getClassId.replace('?',id);
+      this.$http.post("/api/base/action", { sql: sql }).then(res => {
+        var classId = JSON.parse(res.data[0].classes)
         console.log(classId)
+        for(var i=0;i < classId.length;i++){
+          sql = sqlMap.customers.getClass.replace('?',classId[i])
+          this.$http.post("/api/base/action", { sql: sql }).then(res => {
+            this.cancelList.push(res.data[0])
+          });
+        }
       });
     },
     request() {
@@ -175,14 +185,52 @@ export default {
         this.courses = data;
       });
     },
-     updateCustomer(row) {
-      var sql = sqlMap.customers.buyCourse;
-      sql=sql.replace('?',JSON.stringify(this.buyCourse.courses)).replace('?',row.ifBuy=='0'?'0':'1').replace('?',row.id)
+    cancelBuy(row){
+      console.log(row.id)
+      for(var i=0;i<this.cancelList.length;i++){
+        if(this.cancelList[i].id == row.id){
+          this.cancelList.splice(i,1)
+        }
+      }
+      console.log(this.cancelList)
+      var courses = []
+      var classes = []
+      var courseId = null
+      for(let j=0;j<this.cancelList.length;j++){
+        classes.push(this.cancelList[j].id)
+
+        if(courses.length == 0){
+          var sql = sqlMap.customers.getCourseId.replace('?',"\'"+this.cancelList[j].course+"\'")
+          this.$http.post("/api/base/action", { sql: sql }).then(res => {
+            courseId = res.data[0].id
+            courses.push(courseId)
+          });
+        }
+
+        for(var m = 0;m < courses.length;m++){
+          var sql = sqlMap.customers.getCourseId.replace('?',"\'"+this.cancelList[j].course+"\'")
+          this.$http.post("/api/base/action", { sql: sql }).then(res => {
+            courseId = res.data[0].id
+          });
+          if(courses[m] == courseId){
+            break
+          }
+        }
+        if(m == courses.length){
+          console.log('jiale')
+          courses.push(courseId)
+        }
+      }
+
+      if (classes.length == 0){
+        this.row.ifBuy = 0
+      }
+      console.log(courses,'kec')
+      sql = sqlMap.customers.cancelClass
+      sql=sql.replace('?',JSON.stringify(courses)).replace('?',this.row.ifBuy).replace('?',JSON.stringify(classes)).replace('?',this.row.id)
+      console.log(sql)
       this.$http.post("/api/base/action", { sql: sql }).then(res => {
-        var data = res.data;
-        
-        this.dialogBuy = false;
-        this.request()
+        console.log('success')
       });
     },
   }
