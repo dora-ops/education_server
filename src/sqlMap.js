@@ -88,7 +88,7 @@ var sqlMap = {
         getClassId: 'select classes from customers where id = ?',
         getClass: 'select * from classes where id = ?',
         getCourseId: 'select id from courses where name = ?',
-        cancelClass: 'UPDATE `customers` SET `courses` = "?" , `ifBuy` = "?" , `classes` = "?" WHERE (`id` = "?");',
+        cancelClass: 'UPDATE `customers` SET  `ifBuy` = "?" , `classes` = "?" WHERE (`id` = "?");',
     }
 
 }

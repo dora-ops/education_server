@@ -179,11 +179,9 @@ export default {
             else if(myDate.isAfter(this.classList[i].endDate))
               this.classList[i].progress = 100
             else{
-              debugger
               this.classList[i].progress =parseInt(100*(myDate.diff(sd,'second'))/(ed.diff(sd,'second'))) 
             }
           }
-
         });
       });
     }

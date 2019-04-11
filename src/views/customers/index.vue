@@ -81,9 +81,6 @@
           </el-table-column>
         </el-table>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary">保 存</el-button>
-      </div>
     </el-dialog>
   </div>
 </template>
@@ -146,8 +143,6 @@ export default {
       this.cancelList=[]
       this.getClass(row.id)
       this.dialogCancel = true
-      // this.buyCourse.courses=[]
-      // row.ifBuy='0'
     },
     getClass(id){
       
@@ -192,45 +187,16 @@ export default {
           this.cancelList.splice(i,1)
         }
       }
-      console.log(this.cancelList)
-      var courses = []
       var classes = []
-      var courseId = null
       for(let j=0;j<this.cancelList.length;j++){
         classes.push(this.cancelList[j].id)
-
-        if(courses.length == 0){
-          var sql = sqlMap.customers.getCourseId.replace('?',"\'"+this.cancelList[j].course+"\'")
-          this.$http.post("/api/base/action", { sql: sql }).then(res => {
-            courseId = res.data[0].id
-            courses.push(courseId)
-          });
-        }
-
-        for(var m = 0;m < courses.length;m++){
-          var sql = sqlMap.customers.getCourseId.replace('?',"\'"+this.cancelList[j].course+"\'")
-          this.$http.post("/api/base/action", { sql: sql }).then(res => {
-            courseId = res.data[0].id
-          });
-          if(courses[m] == courseId){
-            break
-          }
-        }
-        if(m == courses.length){
-          console.log('jiale')
-          courses.push(courseId)
-        }
       }
-
       if (classes.length == 0){
         this.row.ifBuy = 0
       }
-      console.log(courses,'kec')
-      sql = sqlMap.customers.cancelClass
-      sql=sql.replace('?',JSON.stringify(courses)).replace('?',this.row.ifBuy).replace('?',JSON.stringify(classes)).replace('?',this.row.id)
-      console.log(sql)
+      var sql = sqlMap.customers.cancelClass
+      sql=sql.replace('?',this.row.ifBuy).replace('?',JSON.stringify(classes)).replace('?',this.row.id)
       this.$http.post("/api/base/action", { sql: sql }).then(res => {
-        console.log('success')
       });
     },
   }
