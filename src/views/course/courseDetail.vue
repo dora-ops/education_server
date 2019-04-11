@@ -120,7 +120,7 @@ export default {
     },
     updateifSale(row) {
       this.claId = row.id;
-      if (row.resource) {
+      if (row.resource&&JSON.parse(row.resource).length!=0) {
         var sql = classes.getResource(JSON.parse(row.resource));
         this.$http.post("/api/base/action", { sql: sql }).then(res => {
           this.fileList = res.data.map(item => {
@@ -166,18 +166,21 @@ export default {
           var data = res.data;
           this.classList = data;
           let myDate = new Date();
-          myDate=this.$moment(myDate).format("YYYY-MM-DD")
+          myDate=this.$moment(myDate)
           console.log(myDate)
           for(let i = 0;i<this.classList.length;i++){
-            this.classList[i].startDate = this.$moment(this.classList[i].startDate).format("YYYY-MM-DD");
-            this.classList[i].endDate = this.$moment(this.classList[i].endDate).format("YYYY-MM-DD");
+            var sd=  this.$moment(this.classList[i].startDate)
+            var ed=  this.$moment(this.classList[i].endDate)
+            this.classList[i].startDate = sd.format("YYYY-MM-DD");
+            this.classList[i].endDate = ed.format("YYYY-MM-DD");
             console.log(this.classList[i])
-            if(myDate <= this.classList[i].startDate)
+            if(myDate.isBefore(this.classList[i].startDate))
               this.classList[i].progress = 0
-            else if(myDate >= this.classList[i].endDate)
+            else if(myDate.isAfter(this.classList[i].endDate))
               this.classList[i].progress = 100
             else{
-              this.classList[i].progress = (myDate-this.classList[i].startDate)/(this.classList[i].endDate-this.classList[i].startDate)
+              debugger
+              this.classList[i].progress =parseInt(100*(myDate.diff(sd,'second'))/(ed.diff(sd,'second'))) 
             }
           }
 

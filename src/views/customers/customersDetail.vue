@@ -104,7 +104,7 @@ export default {
           class: 'a',
           money: 'a',
           reception: 'a',
-          progress: 30
+        //   progress: 30
         },
         {
           buyDate: 'b',
