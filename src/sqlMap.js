@@ -32,6 +32,7 @@ var sqlMap = {
         autoClassQTY: 'UPDATE `courses` SET classQTY = classQTY+1 WHERE (`id` = "?");'
     },
     classes: {
+        getTeacher: 'select * from teacher where course ="?"',
         getCourseClass: 'select * from classes where course ="?"',
         delClass: 'delete  from classes where id ="?"',
         getResource: function (params) {
@@ -83,7 +84,8 @@ var sqlMap = {
             }
             return sql
         },
-        buyCourse: 'UPDATE `customers` SET `courses` = "?" , `ifBuy` = "?" WHERE (`id` = "?");'
+        buyCourse: 'UPDATE `customers` SET `courses` = "?" , `ifBuy` = "?" WHERE (`id` = "?");',
+        getClass: 'select classes from customers where id = ?'
     }
 
 }

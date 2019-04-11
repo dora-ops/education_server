@@ -35,7 +35,7 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="330">
         <template slot-scope="scope">
-          <el-button class="filter-item" type="primary" v-waves icon="search" @click="addClass(scope.row)">购课</el-button>
+          <!-- <el-button class="filter-item" type="primary" v-waves icon="search" @click="addClass(scope.row)">购课</el-button> -->
           <el-button v-if='scope.row.ifBuy == 1' class="filter-item" type="primary" v-waves icon="search" @click="cancelBuy(scope.row)">退课</el-button>
           <el-button v-else disabled class="filter-item" type="primary" v-waves icon="search" >退课</el-button>
         </template>
@@ -46,7 +46,7 @@
                      :current-page.sync="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit"
                      layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
     </div>
-    <el-dialog id="buy" title="购买课程" :visible.sync="dialogBuy" width="400px" center >
+    <!-- <el-dialog id="buy" title="购买课程" :visible.sync="dialogBuy" width="400px" center >
       <el-form :model="buyCourse" size="mini" label-width="100px">
         <el-form-item label="客户名称">{{buyCourse.name}}
         </el-form-item>
@@ -55,18 +55,12 @@
             <el-option v-for="course in courses" :key="course.id" :label="course.name" :value="course.id"></el-option> 
           </el-select>
         </el-form-item>
-        <!-- <el-form-item label="班级选择">
-          <el-select v-model="classes" placeholder="请选择课程">
-            <el-option label="1" value="1"></el-option>
-            <el-option label="2" value="2"></el-option>
-          </el-select>
-        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="updateCustomer(buyCourse)">保 存</el-button>
       </div>
-    </el-dialog>
-    <!-- <el-dialog id="Cancel" title="退课" :visible.sync="dialogCancel" width="400px" center >
+    </el-dialog> -->
+    <el-dialog id="Cancel" title="退课" :visible.sync="dialogCancel" width="400px" center >
       <el-form :model="buyCourse" size="mini" label-width="75px">
         <el-form-item label="客户名称:">11111111</el-form-item>
         <el-table :data="courseCancel">
@@ -90,7 +84,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button type="primary">保 存</el-button>
       </div>
-    </el-dialog> -->
+    </el-dialog>
   </div>
 </template>
 
@@ -146,9 +140,18 @@ export default {
       loading.close();
     },
     cancelBuy(row) {
-        this.buyCourse.courses=[]
-        row.ifBuy='0'
-     this.updateCustomer(row)
+      this.getClass(row.id)
+      // this.dialogCancel = true
+      // this.buyCourse.courses=[]
+      // row.ifBuy='0'
+      // this.updateCustomer(row)
+    },
+    getClass(id){
+      sql = sqlMap.customers.getClass.replace('?',id);
+      this.$http.post("/api/base/getBuyClass", { sql: sql }).then(res => {
+        var classId = res.data;
+        console.log(classId)
+      });
     },
     request() {
       var sql = sqlMap.customers.page(this.listQuery);

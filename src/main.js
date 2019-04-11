@@ -16,6 +16,10 @@ import axios from 'axios'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+import moment from "vue-moment"
+Vue.use(moment);
+Vue.prototype.$Moment = moment;
+
 Vue.use(ElementUI, { locale })
 axios.defaults.baseURL="http://localhost:3000";
 Vue.prototype.$http = axios;

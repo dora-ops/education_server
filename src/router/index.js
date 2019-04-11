@@ -157,6 +157,7 @@ export const constantRouterMap = [
       {
         path: 'customersDetail',
         name: '客户详情',
+        hidden: true,
         component: () => import('@/views/customers/customersDetail'),
         meta: { title: '客户详情', icon: 'table' }
       }
@@ -177,6 +178,7 @@ export const constantRouterMap = [
       {
         path: 'courseDetail/:id',
         name: '课程详情',
+        hidden: true,
         component: () => import('@/views/course/courseDetail'),
         meta: { title: '课程详情', icon: 'table' }
       }

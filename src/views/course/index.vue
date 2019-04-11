@@ -32,7 +32,7 @@
         <template slot-scope="scope">
           <div v-if='scope.row.ifSale == 0'>
             <el-button type="primary" @click="updateifSale(scope.row)">上架</el-button>
-            <el-button type="info" disabled @click="addClass">添加班级</el-button>
+            <el-button type="info" disabled>添加班级</el-button>
           </div>
           <div v-else>
             <el-button type="info" @click="updateifSale(scope.row)">下架</el-button>
@@ -53,10 +53,7 @@
         <el-form-item label="课程名称:">
           <el-input v-model="Add.name" placeholder="请输入内容"></el-input>
         </el-form-item>
-         <el-form-item label="班级数量:">
-          <el-input v-model="Add.classQTY" placeholder="请输入内容"></el-input>
-        </el-form-item>
-         <el-form-item label="价格:">
+        <el-form-item label="价格:">
           <el-input v-model="Add.price" placeholder="请输入内容"></el-input>
         </el-form-item>
         <el-form-item label="课程简介:">
@@ -80,13 +77,14 @@
          <el-form-item label="结束时间:">
           <el-date-picker v-model="ClassAdd.endDate" value-format="yyyy-MM-dd" type="date" placeholder="选择时间"></el-date-picker>
         </el-form-item>
-        <el-form-item label="班级人数:">
-          <el-input v-model="ClassAdd.peopleQTY" placeholder="请输入内容"></el-input>
-        </el-form-item>
         <el-form-item label="班主任:">
           <el-select v-model="ClassAdd.teacher" placeholder="请选择班主任" clearable>
-          <el-option label="teahcer1" value="teahcer1"></el-option>
-          <el-option label="teahcer2" value="teahcer2"></el-option>
+            <el-option
+              v-for="item in this.teacher"
+              :key="item.id"
+              :label="item.name"
+              :value="item.name">
+            </el-option>
         </el-select>
         </el-form-item>
          <el-form-item label="章节目录:">
@@ -125,15 +123,16 @@ export default {
       Add: {
         name: "",
         abstract: "",
-        ifSale: "0"
+        ifSale: "0",
+        classQTY: 0
       },
       resource: [],
       ClassAdd: {
         name: "",
         course: "",
-        teacher: "",
+        teacher: [],
         resource: "",
-        progress:30
+        peopleQTY: 0
       },
       row:{}
     };
@@ -150,6 +149,14 @@ export default {
   },
 
   methods: {
+    getTeacher(courseId){
+      var sql = sqlMap.classes.getTeacher.replace('?',this.row.id);
+      this.$http.post("/api/base/getTeacher", { sql: sql }).then(res => {
+        this.teacher = res.data
+        console.log(this.teacher,'教师列表')
+        this.dialogCalssAdd = true;
+        });
+    },
     goDetail(id) {
       const loading = this.$loading({
         lock: true,
@@ -161,9 +168,10 @@ export default {
       loading.close();
     },
     addClass(row) {
-      this.ClassAdd.course = row.name;
-      this.dialogCalssAdd = true;
       this.row=row
+      this.getTeacher(this.row.courseId)
+      this.ClassAdd.course = this.row.name;
+      
     },
     courseAddClass() {
       if (this.resource) {

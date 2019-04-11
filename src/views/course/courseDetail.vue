@@ -23,38 +23,38 @@
                 <div v-else>
                     <h2>班级信息</h2>
                     <el-table :key='tableKey' :data="classList" border fit highlight-current-row>
-                        <el-table-column align="center" label="班级名称">
+                        <el-table-column align="center" label="班级名称" width="170">
                             <template slot-scope="scope">
                                 <span>{{scope.row.name}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column align="center" label="开始日期">
+                        <el-table-column align="center" label="开始日期" width="200">
                             <template slot-scope="scope">
                                 <span>{{scope.row.startDate}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column align="center" label="结束日期">
+                        <el-table-column align="center" label="结束日期" width="200">
                             <template slot-scope="scope">
                                 <span>{{scope.row.endDate}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column align="center" label="班主任">
+                        <el-table-column align="center" label="班主任" width="110">
                             <template slot-scope="scope">
                                 <span>{{scope.row.teacher}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column align="center" label="人数">
+                        <el-table-column align="center" label="人数" width="100">
                             <template slot-scope="scope">
                                 <span>{{scope.row.peopleQTY}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column align="center" label="开课进度">
+                        <el-table-column align="center" label="开课进度" width="160">
                             <template slot-scope="scope">
                                 <span v-if='scope.row.progress < 0'>未开课</span>
                                 <el-progress v-else :text-inside="true" :stroke-width="15" :percentage="scope.row.progress" :status="scope.row.status"></el-progress>
                             </template>
                         </el-table-column>
-                        <el-table-column align="center" label="操作" width="80">
+                        <el-table-column align="center" label="操作">
                             <template slot-scope="scope">
                                 <el-button type="primary" @click="updateifSale(scope.row)">上传章节</el-button>
                                 <el-button type="primary" @click="delClass(scope.row)">删除</el-button>
@@ -165,6 +165,22 @@ export default {
         this.$http.post("/api/base/action", { sql: sql }).then(res => {
           var data = res.data;
           this.classList = data;
+          let myDate = new Date();
+          myDate=this.$moment(myDate).format("YYYY-MM-DD")
+          console.log(myDate)
+          for(let i = 0;i<this.classList.length;i++){
+            this.classList[i].startDate = this.$moment(this.classList[i].startDate).format("YYYY-MM-DD");
+            this.classList[i].endDate = this.$moment(this.classList[i].endDate).format("YYYY-MM-DD");
+            console.log(this.classList[i])
+            if(myDate <= this.classList[i].startDate)
+              this.classList[i].progress = 0
+            else if(myDate >= this.classList[i].endDate)
+              this.classList[i].progress = 100
+            else{
+              this.classList[i].progress = (myDate-this.classList[i].startDate)/(this.classList[i].endDate-this.classList[i].startDate)
+            }
+          }
+
         });
       });
     }
